@@ -129,5 +129,14 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Ignore everything in the uploads folder
+uploads/**
 
-uploads/
+# Except for the uploads/images folder
+!uploads/images/
+
+# Ignore everything inside uploads/images folder
+uploads/images/**
+
+# Allow the uploads/images folder itself to be tracked
+!uploads/images/.gitkeep
