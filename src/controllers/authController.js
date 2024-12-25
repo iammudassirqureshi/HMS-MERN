@@ -10,15 +10,16 @@ export const register = asyncHandler(async (req, res, next) => {
     if (existinUser) {
       return next(
         new errorResponse("User already exists", 400, {
-          type: "EmailAlreadyExists",
+          type: "USER_ALREADY_EXISTS",
         })
       );
     }
 
+    req.body.preferences = JSON.parse(req.body.preferences);
     req.body.picture = req.file ? req.file.filename : "";
     const user = await User.create(req.body);
     if (!user) {
-      return next(new errorResponse("User not created", 400));
+      return next(new errorResponse("User not registered", 400));
     }
 
     res
@@ -40,14 +41,27 @@ export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   try {
     if (!email || !password)
-      return next(new errorResponse("Please provide email and password", 400));
+      return next(
+        new errorResponse("Please provide email and password", 400, {
+          type: "INVALID_CREDENTIALS",
+        })
+      );
 
     const user = await User.findOne({ email }).select("+password");
-    if (!user) return next(new errorResponse("Invalid credentials", 401));
+    if (!user)
+      return next(
+        new errorResponse("Invalid credentials", 401, {
+          type: "INVALID_CREDENTIALS",
+        })
+      );
 
     const isPasswordMatched = await user.matchPassword(password);
     if (!isPasswordMatched)
-      return next(new errorResponse("Invalid credentials", 401));
+      return next(
+        new errorResponse("Invalid credentials", 401, {
+          type: "INVALID_CREDENTIALS",
+        })
+      );
 
     res
       .status(200)

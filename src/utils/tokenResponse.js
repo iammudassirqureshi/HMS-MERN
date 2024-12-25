@@ -11,6 +11,6 @@ export const parsedUser = (user) => {
     address: user.address,
     dob: user.dob,
     isActive: user.isActive,
-    preferences: JSON.parse(user.preferences),
+    preferences: user.preferences,
   };
 };

@@ -13,8 +13,9 @@ connectDB();
 
 const app = express();
 
-app.use(express.json()); // Middleware to parse JSON
-app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded bodies
+// Middleware to parse JSON & URL-encoded bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Dev logging middleware
 if (process.env.NODE_ENV === "development") {
