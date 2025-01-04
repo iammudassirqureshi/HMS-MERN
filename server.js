@@ -7,6 +7,7 @@ import { errorHandler } from "./src/middleware/errorMiddleware.js";
 // import routes
 import userRoutes from "./src/routes/userRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
+import roomRoutes from "./src/routes/roomRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -25,6 +26,7 @@ if (process.env.NODE_ENV === "development") {
 // Define routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/rooms", roomRoutes);
 
 // Error handler middleware
 app.use(errorHandler);

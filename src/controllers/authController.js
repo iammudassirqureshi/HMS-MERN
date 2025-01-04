@@ -2,6 +2,7 @@ import User from "../schemas/User.js";
 import errorResponse from "../utils/errorResponse.js";
 import { asyncHandler } from "../middleware/asyncMiddleware.js";
 import { parsedUser } from "../utils/tokenResponse.js";
+import jwt from "jsonwebtoken";
 
 export const register = asyncHandler(async (req, res, next) => {
   try {
@@ -56,12 +57,28 @@ export const login = asyncHandler(async (req, res, next) => {
       );
 
     const isPasswordMatched = await user.matchPassword(password);
-    if (!isPasswordMatched)
+    if (!isPasswordMatched) {
       return next(
         new errorResponse("Invalid credentials", 401, {
           type: "INVALID_CREDENTIALS",
         })
       );
+    }
+
+    let isTokenValid = false;
+    if (user.token) {
+      try {
+        jwt.verify(user.token, process.env.JWT_ACCESS_TOKEN_SECRET);
+        isTokenValid = true;
+      } catch (error) {
+        console.log("Token expired or invalid, generating a new one.");
+      }
+    }
+
+    if (!isTokenValid) {
+      user.token = user.getSignedToken();
+      await user.save();
+    }
 
     res
       .status(200)

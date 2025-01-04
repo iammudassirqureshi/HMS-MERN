@@ -34,6 +34,16 @@ const UserSchema = new mongoose.Schema(
     token: { type: String },
     isActive: { type: Boolean, default: true },
     preferences: { type: Object },
+    maritalStatus: {
+      type: String,
+      enum: ["single", "married", "divorced", "widowed"],
+    },
+    cnic: { type: String, unique: true, sparse: true },
+    emergencyContact: {
+      name: { type: String },
+      relation: { type: String },
+      phone: { type: String },
+    },
   },
   { timestamps: true }
 );
@@ -57,6 +67,13 @@ UserSchema.pre("save", async function (next) {
   }
   return next();
 });
+
+// Sign JWT and return
+UserSchema.methods.getSignedToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE,
+  });
+};
 
 // Match user entered password to hashed password in database
 UserSchema.methods.matchPassword = async function (enteredPassword) {
